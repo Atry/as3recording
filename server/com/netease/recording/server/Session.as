@@ -11,7 +11,7 @@ package com.netease.recording.server
   import flash.filesystem.FileMode;
   import flash.filesystem.FileStream;
   import flash.utils.Timer;
-  internal final class Session
+  public final class Session
   {
     public static const TIMEOUT:Number = 1000;
     public const timer:Timer = new Timer(TIMEOUT);
