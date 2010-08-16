@@ -184,7 +184,7 @@ as listed at <url: http://www.opensource.org/licenses/bsd-license.php >.
     <mx:Object>
       <mx:Script><![CDATA[
         import com.netease.recording.server.Session;
-        public static const SEND_BYTES_LIMIT:uint = 30000;
+        public static const SEND_BYTES_LIMIT:uint = 32768;
         public function getReplay(name:String, dataConnectionName:String):void
         {
           const client:LocalConnection = new LocalConnection();
@@ -204,22 +204,9 @@ as listed at <url: http://www.opensource.org/licenses/bsd-license.php >.
             {
               throw new IllegalOperationError();
             }
-            
-            for (;;)
-            {
-              const buffer:ByteArray = new ByteArray();
-              if (stream.bytesAvailable > SEND_BYTES_LIMIT)
-              {
-                stream.readBytes(buffer, 0, SEND_BYTES_LIMIT);
-                client.send(dataConnectionName, "replayData", buffer); 
-              }
-              else
-              {
-                stream.readBytes(buffer, 0, stream.bytesAvailable);
-                client.send(dataConnectionName, "replayData", buffer);
-                break;
-              }
-            }
+            const buffer:ByteArray = new ByteArray();
+            stream.readBytes(buffer, 0, stream.bytesAvailable);
+            client.send(dataConnectionName, "replayData", buffer);
             if (stream.position == file.size)
             {
               client.send(dataConnectionName, "replayEnd");
@@ -229,6 +216,7 @@ as listed at <url: http://www.opensource.org/licenses/bsd-license.php >.
               stream.close();
             }
           });
+          stream.readAhead = SEND_BYTES_LIMIT;
           stream.openAsync(file, FileMode.READ);
         }
         
