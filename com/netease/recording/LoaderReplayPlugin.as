@@ -139,16 +139,16 @@ final class LoaderDisplay extends Loader
 
 final class ReplayLoader extends EventDispatcher implements ILoader, ILoaderInfo
 {
-  private const _loader:LoaderDisplay = new LoaderDisplay(ReplayLoader(this));
-    
+  private const _loaderInfo:LoaderInfo = new Loader().contentLoaderInfo;
+
   public function asDisplayObject():DisplayObjectContainer
   {
-    return _loader;
+    return _loaderInfo.loader;
   }
   
   public function get content():DisplayObject
   {
-    return _loader.content;
+    return _loaderInfo.content;
   }
     
   public function get contentLoaderInfo():ILoaderInfo
@@ -158,67 +158,67 @@ final class ReplayLoader extends EventDispatcher implements ILoader, ILoaderInfo
   
   public function close():void
   {
-    _loader.close();
+    _loaderInfo.loader.close();
   }
   
   public function load(request:URLRequest, context:LoaderContext = null):void
   {
-    _loader.load(request, context);
+    _loaderInfo.loader.load(request, context);
   }
   
   public function loadBytes(bytes:ByteArray, context:LoaderContext = null):void
   {
-    _loader.loadBytes(bytes, context);
+    _loaderInfo.loader.loadBytes(bytes, context);
   }
   
   public function unload():void
   {
-    _loader.unload();
+    _loaderInfo.loader.unload();
   }
   
   public function unloadAndStop(gc:Boolean = true):void
   {
-    _loader.unloadAndStop(gc);
+    _loaderInfo.loader.unloadAndStop(gc);
   }
   
   public function get actionScriptVersion():uint
   {
-    return loader.contentLoaderInfo.actionScriptVersion;
+    return _loaderInfo.actionScriptVersion;
   }
     
   public function get applicationDomain():ApplicationDomain
   {
-    return loader.contentLoaderInfo.applicationDomain;
+    return _loaderInfo.applicationDomain;
   }
     
   public function get bytesLoaded():uint
   {
-    return loader.contentLoaderInfo.bytesLoaded;
+    return _loaderInfo.bytesLoaded;
   }
     
   public function get bytesTotal():uint
   {
-    return loader.contentLoaderInfo.bytesTotal;
+    return _loaderInfo.bytesTotal;
   }
     
   public function get childAllowsParent():Boolean
   {
-    return loader.contentLoaderInfo.childAllowsParent;
+    return _loaderInfo.childAllowsParent;
   }
     
   public function get contentType():String
   {
-    return loader.contentLoaderInfo.contentType;
+    return _loaderInfo.contentType;
   }
     
   public function get frameRate():Number
   {
-    return loader.contentLoaderInfo.frameRate;
+    return _loaderInfo.frameRate;
   }
     
   public function get height():int
   {
-    return loader.contentLoaderInfo.height;
+    return _loaderInfo.height;
   }
     
   public function get loader():ILoader
@@ -228,42 +228,42 @@ final class ReplayLoader extends EventDispatcher implements ILoader, ILoaderInfo
     
   public function get loaderURL():String
   {
-    return loader.contentLoaderInfo.loaderURL;
+    return _loaderInfo.loaderURL;
   }
     
   public function get parameters():Object
   {
-    return loader.contentLoaderInfo.parameters;
+    return _loaderInfo.parameters;
   }
     
   public function get parentAllowsChild():Boolean
   {
-    return loader.contentLoaderInfo.parentAllowsChild;
+    return _loaderInfo.parentAllowsChild;
   }
     
   public function get sameDomain():Boolean
   {
-    return loader.contentLoaderInfo.sameDomain;
+    return _loaderInfo.sameDomain;
   }
     
   public function get sharedEvents():EventDispatcher
   {
-    return loader.contentLoaderInfo.sharedEvents;
+    return _loaderInfo.sharedEvents;
   }
 
   public function get swfVersion():uint
   {
-    return loader.contentLoaderInfo.swfVersion;
+    return _loaderInfo.swfVersion;
   }
     
   public function get url():String
   {
-    return loader.contentLoaderInfo.url;
+    return _loaderInfo.url;
   }
     
   public function get width():int
   {
-    return loader.contentLoaderInfo.width;
+    return _loaderInfo.width;
   }
   
 }

@@ -14,7 +14,14 @@ package com.netease.recording
   import flash.events.IEventDispatcher;
   import flash.events.EventDispatcher;
   import flash.system.ApplicationDomain;
-
+  
+  [Event(type="flash.events.Event", name="complete")]
+  [Event(type="flash.events.Event", name="open")]
+  [Event(type="flash.events.Event", name="unload")]
+  [Event(type="flash.events.Event", name="init")]
+  [Event(type="flash.events.ProgressEvent", name="progress")]
+  [Event(type="flash.events.HTTPStatusEvent", name="httpStatus")]
+  [Event(type="flash.events.IOErrorEvent", name="ioError")]
   public interface ILoaderInfo extends IEventDispatcher
   {
     function get actionScriptVersion():uint;

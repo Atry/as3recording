@@ -219,15 +219,23 @@ package com.netease.recording
     private function processReplayEvent(eventElement:XML):void
     {
       const eventType:String = eventElement.name();
-      const targetType:String = eventElement.@targetType;
+      const targetTypeName:String = eventElement.@targetType;
+      const targetType:Class =
+          targetTypeName ?
+          Class(getDefinitionByName(targetTypeName)) :
+          null;
       const pluginData:PluginData =
           targetType ?
-          instanceHandlers[getDefinitionByName(targetType)]:
+          instanceHandlers[targetType]:
           globalHandlers[eventType];
       var target:IEventDispatcher;
       if (targetType)
       {
         target = releaseRegisteredObject(eventElement.target.@id);
+        if (!(target is targetType))
+        {
+          throw new IllegalOperationError();
+        }
       }
       else
       {
@@ -242,15 +250,7 @@ package com.netease.recording
                                                     cancelable,
                                                     eventElement);
       pluginData.plugin.beforeDispatch(eventElement, target, event);
-      _currentEvent = event;
-      try
-      {
-        target.dispatchEvent(event);
-      }
-      finally
-      {
-        _currentEvent = null;
-      }
+      target.dispatchEvent(event);
       pluginData.plugin.afterDispatch(eventElement, target, event);
     }
     
@@ -461,12 +461,6 @@ package com.netease.recording
       _locked = false;
     }
     
-    private var _currentEvent:Event = null;
-    
-    replay_internal final function get currentEvent():Event
-    {
-      return _currentEvent;
-    }
   }
 }
 import com.netease.recording.BaseReplayManager;
@@ -494,12 +488,7 @@ final class PluginData
     {
       return;
     }
-    if (manager.replay_internal::locked)
-    {
-      // 由代码触发的事件，应该无视
-      return;
-    }
-    if (manager.replay_internal::currentEvent != event)
+    if (!manager.replay_internal::locked)
     {
       event.stopImmediatePropagation();
       event.preventDefault();

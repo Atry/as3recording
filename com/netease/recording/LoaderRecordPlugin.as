@@ -14,7 +14,8 @@ package com.netease.recording
   import flash.net.URLRequestHeader;
   import flash.system.Capabilities;
   
-  public class LoaderRecordPlugin extends RecordPlugin implements IRecordPlugin
+  public final class LoaderRecordPlugin extends RecordPlugin
+                                        implements IRecordPlugin
   {
     public function LoaderRecordPlugin(manager:RecordManager)
     {
@@ -119,7 +120,8 @@ final class LoaderDisplay extends Loader
 
 final class RecordLoader extends EventDispatcher implements ILoader, ILoaderInfo
 {
-  private const _loader:LoaderDisplay = new LoaderDisplay(RecordLoader(this));
+  private const _loaderInfo:LoaderInfo =
+      new LoaderDisplay(RecordLoader(this)).contentLoaderInfo;
   
   private var simulateDownloadRate:Number;
   
@@ -168,20 +170,22 @@ final class RecordLoader extends EventDispatcher implements ILoader, ILoaderInfo
       simulateCompleteTimer.addEventListener(
           TimerEvent.TIMER_COMPLETE,
           simulateCompleteTimer_timerCompleteHandler);
+      simulateCompleteTimer.start();
     }
   }
   
   [ArrayElementType("flash.events.Event")]
-  private const deferredEvents:Array = [];
+  private var deferredEvents:Array = [];
   
   private function dispatchDeferredEvents():void
   {
-    for (var i:uint = 0; i < deferredEvents.length; i++)
+    const a:Array = deferredEvents;
+    deferredEvents = [];
+    for (var i:uint = 0; i < a.length; i++)
     {
-      const event:Event = deferredEvents[i];
+      const event:Event = a[i];
       dispatchEvent(event);
     }
-    deferredEvents.length = 0;
   }
   
   private function defer(event:Event):void
@@ -194,59 +198,59 @@ final class RecordLoader extends EventDispatcher implements ILoader, ILoaderInfo
     this.simulateDownloadRate = simulateDownloadRate;
     if (isNaN(simulateDownloadRate))
     {
-      _loader.contentLoaderInfo.addEventListener(
+      _loaderInfo.addEventListener(
           Event.COMPLETE,
           dispatchEvent);
-      _loader.contentLoaderInfo.addEventListener(
+      _loaderInfo.addEventListener(
           HTTPStatusEvent.HTTP_STATUS,
           dispatchEvent);
-      _loader.contentLoaderInfo.addEventListener(
+      _loaderInfo.addEventListener(
           Event.INIT,
           dispatchEvent);
-      _loader.contentLoaderInfo.addEventListener(
+      _loaderInfo.addEventListener(
           ProgressEvent.PROGRESS,
           dispatchEvent);
-      _loader.contentLoaderInfo.addEventListener(
+      _loaderInfo.addEventListener(
           IOErrorEvent.IO_ERROR,
           dispatchEvent);
-      _loader.contentLoaderInfo.addEventListener(
+      _loaderInfo.addEventListener(
           Event.UNLOAD,
           dispatchEvent);
     }
     else
     {
-      _loader.contentLoaderInfo.addEventListener(
+      _loaderInfo.addEventListener(
           Event.COMPLETE,
           contentLoaderInfo_completeHandler);
-      _loader.contentLoaderInfo.addEventListener(
+      _loaderInfo.addEventListener(
           HTTPStatusEvent.HTTP_STATUS,
           defer);
-      _loader.contentLoaderInfo.addEventListener(
+      _loaderInfo.addEventListener(
           Event.INIT,
           defer);
-      _loader.contentLoaderInfo.addEventListener(
+      _loaderInfo.addEventListener(
           ProgressEvent.PROGRESS,
           defer);
-      _loader.contentLoaderInfo.addEventListener(
+      _loaderInfo.addEventListener(
           IOErrorEvent.IO_ERROR,
           contentLoaderInfo_ioErrorHandler);
-      _loader.contentLoaderInfo.addEventListener(
+      _loaderInfo.addEventListener(
           Event.UNLOAD,
           contentLoaderInfo_unloadHandler);
     }
-    _loader.contentLoaderInfo.addEventListener(
+    _loaderInfo.addEventListener(
         Event.OPEN,
         dispatchEvent);
   }
-    
+
   public function asDisplayObject():DisplayObjectContainer
   {
-    return _loader;
+    return _loaderInfo.loader;
   }
   
   public function get content():DisplayObject
   {
-    return _loader.content;
+    return _loaderInfo.content;
   }
     
   public function get contentLoaderInfo():ILoaderInfo
@@ -256,67 +260,67 @@ final class RecordLoader extends EventDispatcher implements ILoader, ILoaderInfo
   
   public function close():void
   {
-    _loader.close();
+    _loaderInfo.loader.close();
   }
   
   public function load(request:URLRequest, context:LoaderContext = null):void
   {
-    _loader.load(request, context);
+    _loaderInfo.loader.load(request, context);
   }
   
   public function loadBytes(bytes:ByteArray, context:LoaderContext = null):void
   {
-    _loader.loadBytes(bytes, context);
+    _loaderInfo.loader.loadBytes(bytes, context);
   }
   
   public function unload():void
   {
-    _loader.unload();
+    _loaderInfo.loader.unload();
   }
   
   public function unloadAndStop(gc:Boolean = true):void
   {
-    _loader.unloadAndStop(gc);
+    _loaderInfo.loader.unloadAndStop(gc);
   }
   
   public function get actionScriptVersion():uint
   {
-    return loader.contentLoaderInfo.actionScriptVersion;
+    return _loaderInfo.actionScriptVersion;
   }
     
   public function get applicationDomain():ApplicationDomain
   {
-    return loader.contentLoaderInfo.applicationDomain;
+    return _loaderInfo.applicationDomain;
   }
     
   public function get bytesLoaded():uint
   {
-    return loader.contentLoaderInfo.bytesLoaded;
+    return _loaderInfo.bytesLoaded;
   }
     
   public function get bytesTotal():uint
   {
-    return loader.contentLoaderInfo.bytesTotal;
+    return _loaderInfo.bytesTotal;
   }
     
   public function get childAllowsParent():Boolean
   {
-    return loader.contentLoaderInfo.childAllowsParent;
+    return _loaderInfo.childAllowsParent;
   }
     
   public function get contentType():String
   {
-    return loader.contentLoaderInfo.contentType;
+    return _loaderInfo.contentType;
   }
     
   public function get frameRate():Number
   {
-    return loader.contentLoaderInfo.frameRate;
+    return _loaderInfo.frameRate;
   }
     
   public function get height():int
   {
-    return loader.contentLoaderInfo.height;
+    return _loaderInfo.height;
   }
     
   public function get loader():ILoader
@@ -326,42 +330,42 @@ final class RecordLoader extends EventDispatcher implements ILoader, ILoaderInfo
     
   public function get loaderURL():String
   {
-    return loader.contentLoaderInfo.loaderURL;
+    return _loaderInfo.loaderURL;
   }
     
   public function get parameters():Object
   {
-    return loader.contentLoaderInfo.parameters;
+    return _loaderInfo.parameters;
   }
     
   public function get parentAllowsChild():Boolean
   {
-    return loader.contentLoaderInfo.parentAllowsChild;
+    return _loaderInfo.parentAllowsChild;
   }
     
   public function get sameDomain():Boolean
   {
-    return loader.contentLoaderInfo.sameDomain;
+    return _loaderInfo.sameDomain;
   }
     
   public function get sharedEvents():EventDispatcher
   {
-    return loader.contentLoaderInfo.sharedEvents;
+    return _loaderInfo.sharedEvents;
   }
 
   public function get swfVersion():uint
   {
-    return loader.contentLoaderInfo.swfVersion;
+    return _loaderInfo.swfVersion;
   }
     
   public function get url():String
   {
-    return loader.contentLoaderInfo.url;
+    return _loaderInfo.url;
   }
     
   public function get width():int
   {
-    return loader.contentLoaderInfo.width;
+    return _loaderInfo.width;
   }
 
 }
