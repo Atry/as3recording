@@ -12,11 +12,13 @@ package com.netease.recording
   {
     function newInstance(type:Class, ...args):*;
 
-    function start(stage:Stage, eventPriority:int=10000):void
+    function start(stage:Stage, eventPriority:int=10000):void;
 
-    function stop():void
+    function stop():void;
 
-    function get running():Boolean
+    function get running():Boolean;
+    
+    function get stage():Stage;
     
   }
 }
