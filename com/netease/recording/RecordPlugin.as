@@ -38,7 +38,7 @@ package com.netease.recording
         }
         else
         {
-          return <{name} id={_manager.getRegisterObjectId(value)}/>;
+          return <{name} id={_manager.getRegisterObjectID(value)}/>;
         }
       }
     }

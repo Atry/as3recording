@@ -34,7 +34,7 @@ package com.netease.recording
     [ArrayElementType("uint")]
     private var referenceCount:Array;
 
-    private const objectsById:Array = [];
+    private const objectsByID:Array = [];
 
     private var globalHandlers:Object = {}
 
@@ -68,7 +68,7 @@ package com.netease.recording
       const id:uint = seed++;
       if (!referenceCount || referenceCount[id])
       {
-        objectsById[id] = object;
+        objectsByID[id] = object;
       }
       return id;
     }
@@ -273,7 +273,7 @@ package com.netease.recording
     
     public final function releaseRegisteredObject(id:uint):*
     {
-      const result:* = objectsById[id];
+      const result:* = objectsByID[id];
       if (referenceCount)
       {
         const currentCount:uint = referenceCount[id];
@@ -281,7 +281,7 @@ package com.netease.recording
         if (currentCount == 0)
         {
           delete referenceCount[id];
-          delete objectsById[id];
+          delete objectsByID[id];
         }
         else
         {

@@ -139,7 +139,8 @@ final class LoaderDisplay extends Loader
 
 final class ReplayLoader extends EventDispatcher implements ILoader, ILoaderInfo
 {
-  private const _loaderInfo:LoaderInfo = new Loader().contentLoaderInfo;
+  private const _loaderInfo:LoaderInfo = new LoaderDisplay(ReplayLoader(this)).
+    contentLoaderInfo;
 
   public function asDisplayObject():DisplayObjectContainer
   {

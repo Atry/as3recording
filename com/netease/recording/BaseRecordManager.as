@@ -28,7 +28,7 @@ package com.netease.recording
 
     private const idsOfObject:Dictionary = new Dictionary(true);
     
-    public function getRegisterObjectId(object:Object):uint
+    public function getRegisterObjectID(object:Object):uint
     {
       if (!(object in idsOfObject))
       {

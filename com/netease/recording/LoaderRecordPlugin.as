@@ -94,20 +94,21 @@ package com.netease.recording
     
   }
 }
-import flash.display.LoaderInfo;
-import flash.display.Loader;
-import flash.display.DisplayObject;
-import flash.display.DisplayObjectContainer;
-import flash.events.*;
 import com.netease.recording.BaseRecordManager;
-import flash.utils.Timer;
-import flash.errors.IllegalOperationError;
 import com.netease.recording.ILoader;
 import com.netease.recording.ILoaderInfo;
+
+import flash.display.DisplayObject;
+import flash.display.DisplayObjectContainer;
+import flash.display.Loader;
+import flash.display.LoaderInfo;
+import flash.errors.IllegalOperationError;
+import flash.events.*;
 import flash.net.URLRequest;
-import flash.utils.ByteArray;
-import flash.system.LoaderContext;
 import flash.system.ApplicationDomain;
+import flash.system.LoaderContext;
+import flash.utils.ByteArray;
+import flash.utils.Timer;
 
 final class LoaderDisplay extends Loader
 {
