@@ -385,7 +385,7 @@ package com.netease.recording
       {
         frameChanged = false;
         chunkBuffer.writeUTFBytes(
-            <frame n={frameCount} phase={framePhase}/>.toXMLString());
+            <frame n={frameCount} phase={framePhase || Event.EXIT_FRAME}/>.toXMLString());
         chunkBuffer.writeUTFBytes("\n");
       }
       if (plugin.targetType == null)
