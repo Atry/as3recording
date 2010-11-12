@@ -120,6 +120,17 @@ package com.netease.recording
     {
       return _stage;
     }
+    
+    public final function random():Number
+    {
+      const randomElement:XML = eventList[eventIndex];
+      if (randomElement.name() != "random")
+      {
+        throw new IllegalOperationError();
+      }
+      eventIndex++;
+      return parseFloat(randomElement.text().toString());
+    }
 
     private var frameChanged:Boolean = false;
 

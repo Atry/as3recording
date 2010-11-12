@@ -20,5 +20,11 @@ package com.netease.recording
     
     function get stage():Stage;
     
+    /**
+     * 功能等价于 <code>Math.random</code>。
+     * 调用本函数能保证录制和回放时取得相同的随机数。
+     */
+    function random():Number;
+    
   }
 }

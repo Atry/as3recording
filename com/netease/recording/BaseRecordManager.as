@@ -375,6 +375,20 @@ package com.netease.recording
       return childList;
     }
     
+    public final function random():Number
+    {
+      const result:Number = Math.random();
+      const chunkBuffer:ByteArray = socket.connected ? new ByteArray() : buffer;
+      chunkBuffer.writeUTFBytes(
+        <random>{result.toString()}</random>.toXMLString());
+      if (socket.connected)
+      {
+        writeChunk(socket, chunkBuffer);
+        socket.flush();
+      }
+      return result;
+    }
+    
     private var count:uint = 0;
 
     record_internal final function record(plugin:IRecordPlugin,
@@ -385,7 +399,8 @@ package com.netease.recording
       {
         frameChanged = false;
         chunkBuffer.writeUTFBytes(
-            <frame n={frameCount} phase={framePhase || Event.EXIT_FRAME}/>.toXMLString());
+          <frame n={frameCount} phase={framePhase || Event.EXIT_FRAME}/>.
+          toXMLString());
         chunkBuffer.writeUTFBytes("\n");
       }
       if (plugin.targetType == null)
