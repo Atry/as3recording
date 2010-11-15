@@ -123,13 +123,24 @@ package com.netease.recording
     
     public final function random():Number
     {
-      const randomElement:XML = eventList[eventIndex];
-      if (randomElement.name() != "random")
+      if (running)
       {
-        throw new IllegalOperationError();
+        const randomElement:XML = eventList[eventIndex];
+        if (randomElement.name() != "random")
+        {
+          throw new IllegalOperationError();
+        }
+        /*if (randomElement.text() == "4042158356951990300")
+        {
+          trace(randomElement);
+        }*/
+        eventIndex++;
+        return Number(randomElement.text().toString()) / 0x10000000000000000;
       }
-      eventIndex++;
-      return parseFloat(randomElement.text().toString());
+      else
+      {
+        return Math.random();
+      }
     }
 
     private var frameChanged:Boolean = false;
@@ -161,11 +172,6 @@ package com.netease.recording
           frameChanged = true;
           framePhase = event.type;
         }
-        event.stopImmediatePropagation();
-        if (!IEventDispatcher(event.target).dispatchEvent(event))
-        {
-          event.preventDefault();
-        }
         const frameElement:XML = eventList[eventIndex];
         if (frameElement.name() != "frame")
         {
@@ -180,26 +186,31 @@ package com.netease.recording
             frameCount == waitFor)
         {
           eventIndex++;
-          for (;;)
+        }
+        event.stopImmediatePropagation();
+        if (!IEventDispatcher(event.target).dispatchEvent(event))
+        {
+          event.preventDefault();
+        }
+        for (;;)
+        {
+          if (eventList.length() <= eventIndex)
           {
-            if (eventList.length() <= eventIndex)
+            stop();
+            dispatchEvent(new ReplayEvent(ReplayEvent.COMPLETE));
+            break;
+          }
+          else
+          {
+            const eventElement:XML = eventList[eventIndex];
+            if (eventElement.name() == "frame")
             {
-              stop();
-              dispatchEvent(new ReplayEvent(ReplayEvent.COMPLETE));
               break;
             }
             else
             {
-              const eventElement:XML = eventList[eventIndex];
-              if (eventElement.name() == "frame")
-              {
-                break;
-              }
-              else
-              {
-                eventIndex++;
-                processReplayEvent(eventElement);
-              }
+              eventIndex++;
+              processReplayEvent(eventElement);
             }
           }
         }

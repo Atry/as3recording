@@ -379,8 +379,17 @@ package com.netease.recording
     {
       const result:Number = Math.random();
       const chunkBuffer:ByteArray = socket.connected ? new ByteArray() : buffer;
+      if (frameChanged)
+      {
+        frameChanged = false;
+        chunkBuffer.writeUTFBytes(
+          <frame n={frameCount} phase={framePhase || Event.EXIT_FRAME}/>.
+          toXMLString());
+        chunkBuffer.writeUTFBytes("\n");
+      }
       chunkBuffer.writeUTFBytes(
-        <random>{result.toString()}</random>.toXMLString());
+        <random>{(result * 0x10000000000000000).toString()}</random>.toXMLString());
+      chunkBuffer.writeUTFBytes("\n\n");
       if (socket.connected)
       {
         writeChunk(socket, chunkBuffer);
