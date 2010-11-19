@@ -378,6 +378,10 @@ package com.netease.recording
     public final function random():Number
     {
       const result:Number = Math.random();
+      if (!running)
+      {
+        return result;
+      }
       const chunkBuffer:ByteArray = socket.connected ? new ByteArray() : buffer;
       if (frameChanged)
       {
