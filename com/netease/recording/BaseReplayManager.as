@@ -302,8 +302,16 @@ package com.netease.recording
         currentCount--;
         if (currentCount == 0)
         {
-          delete referenceCount[id];
-          delete objectsByID[id];
+          do
+          {
+            delete referenceCount[id];
+          }
+          while (id in referenceCount);
+          do
+          {
+            delete objectsByID[id];
+          }
+          while (id in objectsByID);
         }
         else
         {

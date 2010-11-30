@@ -73,8 +73,7 @@ package com.netease.recording
                               cancelable,
                               localPoint.x,
                               localPoint.y,
-                              InteractiveObject(manager.locateDisplayObject(
-                                  xml.relatedObject.childAt)),
+                              toInteractiveObject(xml.relatedObject),
                               toBoolean(xml.ctrlKey),
                               toBoolean(xml.altKey),
                               toBoolean(xml.shiftKey),
