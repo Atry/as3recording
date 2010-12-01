@@ -19,7 +19,8 @@ package com.netease.recording
       addPlugin(new KeyboardReplayPlugin(this));
       addPlugin(new FocusReplayPlugin(this));
       addPlugin(new TextReplayPlugin(this));
-
+      
+      addPlugin(new LoaderInfoReplayPlugin(this));
       addPlugin(new LoaderReplayPlugin(this));
       addPlugin(new TimerReplayPlugin(this));
     }

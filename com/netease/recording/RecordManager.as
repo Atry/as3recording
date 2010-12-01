@@ -18,18 +18,6 @@ package com.netease.recording
   
   public class RecordManager extends BaseRecordManager
   {
-    private var loaderPlugin:LoaderRecordPlugin;
-    
-    public function get simulateDownloadRate():Number
-    {
-      return loaderPlugin.simulateDownloadRate;
-    }
-    
-    public function set simulateDownloadRate(value:Number):void
-    {
-      loaderPlugin.simulateDownloadRate = value;
-    }
-    
     public function RecordManager(url:RecordURLRequest)
     {
       super(url);
@@ -39,7 +27,8 @@ package com.netease.recording
       addPlugin(new FocusRecordPlugin(this));
       addPlugin(new TextRecordPlugin(this));
       
-      addPlugin(loaderPlugin = new LoaderRecordPlugin(this));
+      addPlugin(new LoaderInfoRecordPlugin(this));
+      addPlugin(new LoaderRecordPlugin(this));
       addPlugin(new TimerRecordPlugin(this));
     }
 

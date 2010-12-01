@@ -16,7 +16,7 @@ package com.netease.recording
   {
     function get content():DisplayObject;
     
-    function get contentLoaderInfo():ILoaderInfo;
+    function get contentILoaderInfo():ILoaderInfo;
     
     function close():void;
     
