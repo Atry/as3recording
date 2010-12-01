@@ -197,6 +197,7 @@ package com.netease.recording
           if (eventList.length() <= eventIndex)
           {
             stop();
+            eventList = null;
             dispatchEvent(new ReplayEvent(ReplayEvent.COMPLETE));
             break;
           }
@@ -395,8 +396,8 @@ package com.netease.recording
       {
         if (eventList == null)
         {
-          dispatchEvent(new ReplayEvent(ReplayEvent.NOT_FOUND));
           stop();
+          dispatchEvent(new ReplayEvent(ReplayEvent.NOT_FOUND));
         }
         else
         {
