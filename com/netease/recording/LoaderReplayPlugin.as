@@ -128,19 +128,14 @@ import flash.events.EventDispatcher;
 import com.netease.recording.ILoader;
 import com.netease.recording.ILoaderInfo;
 
+
 final class LoaderDisplay extends Loader
 {
-  private var replayLoader:ReplayLoader
-  function LoaderDisplay(replayLoader:ReplayLoader)
-  {
-    this.replayLoader = replayLoader;
-  }
 }
 
 final class ReplayLoader extends EventDispatcher implements ILoader, ILoaderInfo
 {
-  private const _loaderInfo:LoaderInfo = new LoaderDisplay(ReplayLoader(this)).
-    contentLoaderInfo;
+  private const _loaderInfo:LoaderInfo = new LoaderDisplay().contentLoaderInfo;
 
   public function asDisplayObject():DisplayObjectContainer
   {
