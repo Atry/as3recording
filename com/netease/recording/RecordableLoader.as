@@ -8,11 +8,11 @@ package com.netease.recording
   
   public class RecordableLoader extends Loader implements ILoader
   {
-    private var recorder:IRecorder;
+    private var recordingManager:IRecordingManager;
     
-    public function RecordableLoader(recorder:IRecorder)
+    public function RecordableLoader(recordingManager:IRecordingManager)
     {
-      this.recorder = recorder;
+      this.recordingManager = recordingManager;
     }
     
     public override function get contentLoaderInfo():LoaderInfo
@@ -41,7 +41,7 @@ package com.netease.recording
           recordableLoaderInfo = new RecordableLoaderInfo(
             super.contentLoaderInfo);
           weakLoaderInfo[recordableLoaderInfo] = true;
-          recorder.registerObject(ILoaderInfo, recordableLoaderInfo);
+          recordingManager.registerObject(ILoaderInfo, recordableLoaderInfo);
         }
       }
       else
@@ -51,7 +51,7 @@ package com.netease.recording
           recordableLoaderInfo = new RecordableLoaderInfo(
             super.contentLoaderInfo);
           weakLoaderInfo[recordableLoaderInfo] = true;
-          recorder.registerObject(ILoaderInfo, recordableLoaderInfo);
+          recordingManager.registerObject(ILoaderInfo, recordableLoaderInfo);
         }
       }
       return recordableLoaderInfo;

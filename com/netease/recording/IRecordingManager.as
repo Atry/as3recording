@@ -7,17 +7,18 @@
 
 package com.netease.recording
 {
-  public interface IRecorder
+  import flash.display.Stage;
+  public interface IRecordingManager extends IRecorder
   {
-    function newInstance(type:Class, ...args):*;
+    function registerObject(type:Class, object:*):void;
 
-    /**
-     * 功能等价于 <code>Math.random()</code>。
-     * 调用本函数能保证录制和回放时取得相同的随机数。
-     * 
-     * @see Math.random()
-     */
-    function random():Number;
+    function start(stage:Stage, eventPriority:int=10000):void;
+
+    function stop():void;
+
+    function get running():Boolean;
+    
+    function get stage():Stage;
     
   }
 }

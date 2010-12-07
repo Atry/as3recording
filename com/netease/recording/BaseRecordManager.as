@@ -22,7 +22,7 @@ package com.netease.recording
   [Event(type="flash.events.SecurityErrorEvent", name="securityError")]
   [Event(type="flash.events.IOErrorEvent", name="ioError")]
   [Event(type="flash.events.Event", name="close")]
-  public class BaseRecordManager extends EventDispatcher implements IRecorder
+  public class BaseRecordManager extends EventDispatcher implements IRecordingManager
   {
     private var seed:uint = 0;
 

@@ -25,7 +25,7 @@ package com.netease.recording
   
   [Event(type="com.netease.recording.ReplayEvent", name="notFound")]
   [Event(type="com.netease.recording.ReplayEvent", name="complete")]
-  public class BaseReplayManager extends EventDispatcher implements IRecorder
+  public class BaseReplayManager extends EventDispatcher implements IRecordingManager
   {
     private var seed:uint = 0;
 
@@ -284,12 +284,10 @@ package com.netease.recording
       {
         displayObject = DisplayObjectContainer(displayObject).
                         getChildAt(childAt.@index);
-        /*
         if (displayObject.name != childAt.@name)
         {
           throw new IllegalOperationError();
         }
-        */
       }
       return displayObject;
     }
