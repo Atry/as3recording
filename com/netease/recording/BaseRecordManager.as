@@ -37,15 +37,15 @@ package com.netease.recording
       return idsOfObject[object];
     }
     
-    private var globalHandlers:Vector.<PluginData> =
-        new Vector.<PluginData>();
+    private var globalHandlers:Vector.<RecordPluginData> =
+        new Vector.<RecordPluginData>();
 
     private var instanceHandlers:Dictionary = new Dictionary();
 
     public final function addPlugin(plugin:IRecordPlugin):void {
       if (!plugin.targetType)
       {
-        globalHandlers.push(new PluginData(this, plugin));
+        globalHandlers.push(new RecordPluginData(this, plugin));
       }
       else
       {
@@ -53,11 +53,11 @@ package com.netease.recording
         {
           throw new ArgumentError();
         }
-        instanceHandlers[plugin.targetType] = new PluginData(this, plugin);
+        instanceHandlers[plugin.targetType] = new RecordPluginData(this, plugin);
       }
     }
     
-    record_internal final function registerObject(pluginData:PluginData,
+    record_internal final function registerObject(pluginData:RecordPluginData,
                                                   object:*):void
     {
       const eventDispatcher:IEventDispatcher = object as IEventDispatcher;
@@ -80,7 +80,7 @@ package com.netease.recording
     
     public final function registerObject(type:Class, object:*):void
     {
-      const pluginData:PluginData = instanceHandlers[type];
+      const pluginData:RecordPluginData = instanceHandlers[type];
       if (running)
       {
         record_internal::registerObject(pluginData, object);
@@ -89,7 +89,7 @@ package com.netease.recording
     
     public final function newInstance(type:Class, ...args):*
     {
-      const pluginData:PluginData = instanceHandlers[type];
+      const pluginData:RecordPluginData = instanceHandlers[type];
       const product:* = pluginData.plugin.newInstance.apply(null, args);
       if (running)
       {
@@ -208,7 +208,7 @@ package com.netease.recording
       for (var p:* in idsOfObject)
       {
         const product:IEventDispatcher = p;
-        for each (var pluginHandlers:PluginData in instanceHandlers)
+        for each (var pluginHandlers:RecordPluginData in instanceHandlers)
         {
           for each (var eventName:String in pluginHandlers.plugin.eventNames)
           {
@@ -221,7 +221,7 @@ package com.netease.recording
           }
         }
       }
-      for each (var globalPlugin:PluginData in globalHandlers)
+      for each (var globalPlugin:RecordPluginData in globalHandlers)
       {
         for each (var globalEventName:String in globalPlugin.plugin.eventNames)
         {
@@ -335,7 +335,7 @@ package com.netease.recording
                              enterFrameHandler,
                              false,
                              eventPriority);
-      for each (var globalPlugin:PluginData in globalHandlers)
+      for each (var globalPlugin:RecordPluginData in globalHandlers)
       {
         for each (var eventName:String in globalPlugin.plugin.eventNames)
         {
@@ -453,13 +453,13 @@ import com.netease.recording.*;
 import flash.errors.*;
 import flash.events.*;
 namespace record_internal;
-final class PluginData
+final class RecordPluginData
 {
   public var manager:BaseRecordManager;
 
   public var plugin:IRecordPlugin;
 
-  public function PluginData(manager:BaseRecordManager, plugin:IRecordPlugin)
+  public function RecordPluginData(manager:BaseRecordManager, plugin:IRecordPlugin)
   {
     this.manager = manager;
     this.plugin = plugin;

@@ -43,7 +43,7 @@ package com.netease.recording
     public final function addPlugin(plugin:IReplayPlugin):void {
       if (!plugin.targetType)
       {
-        const handlers:PluginData = new PluginData(this, plugin);
+        const handlers:ReplayPluginData = new ReplayPluginData(this, plugin);
         for each (var eventName:String in handlers.plugin.eventNames)
         {
           if (eventName in globalHandlers)
@@ -59,7 +59,7 @@ package com.netease.recording
         {
           throw new ArgumentError();
         }
-        instanceHandlers[plugin.targetType] = new PluginData(this, plugin);
+        instanceHandlers[plugin.targetType] = new ReplayPluginData(this, plugin);
       }
     }
     
@@ -73,7 +73,7 @@ package com.netease.recording
       return id;
     }
      
-    replay_internal final function registerObject(pluginData:PluginData,
+    replay_internal final function registerObject(pluginData:ReplayPluginData,
                                                   object:*):void
     {
       const eventDispatcher:IEventDispatcher = object as IEventDispatcher;
@@ -96,7 +96,7 @@ package com.netease.recording
     
     public final function registerObject(type:Class, object:*):void
     {
-      const pluginData:PluginData = instanceHandlers[type];
+      const pluginData:ReplayPluginData = instanceHandlers[type];
       if (running)
       {
         replay_internal::registerObject(pluginData, object);
@@ -105,7 +105,7 @@ package com.netease.recording
     
     public final function newInstance(type:Class, ...args):*
     {
-      const pluginData:PluginData = instanceHandlers[type];
+      const pluginData:ReplayPluginData = instanceHandlers[type];
       const product:* = pluginData.plugin.newInstance.apply(null, args);
       if (running)
       {
@@ -247,7 +247,7 @@ package com.netease.recording
           targetTypeName ?
           Class(getDefinitionByName(targetTypeName)) :
           null;
-      const pluginData:PluginData =
+      const pluginData:ReplayPluginData =
           targetType ?
           instanceHandlers[targetType]:
           globalHandlers[eventType];
@@ -346,7 +346,7 @@ package com.netease.recording
       for (var p:* in idsOfObject)
       {
         const product:IEventDispatcher = p;
-        for each (var pluginHandlers:PluginData in instanceHandlers)
+        for each (var pluginHandlers:ReplayPluginData in instanceHandlers)
         {
           for each (var eventName:String in pluginHandlers.plugin.eventNames)
           {
@@ -361,7 +361,7 @@ package com.netease.recording
       }
       for (var globalEventName:String in globalHandlers)
       {
-        const globalPlugin:PluginData = globalHandlers[globalEventName];
+        const globalPlugin:ReplayPluginData = globalHandlers[globalEventName];
         stage.removeEventListener(globalEventName,
                                   globalPlugin.handler,
                                   true);
@@ -451,7 +451,7 @@ package com.netease.recording
       urlLoader.addEventListener(Event.COMPLETE, urlLoader_completeHandler);
       urlLoader.dataFormat = URLLoaderDataFormat.TEXT;
       urlLoader.load(urlRequest);
-      for each (var globalPlugin:PluginData in globalHandlers)
+      for each (var globalPlugin:ReplayPluginData in globalHandlers)
       {
         for each (var eventName:String in globalPlugin.plugin.eventNames)
         {
@@ -499,13 +499,13 @@ import flash.events.EventPhase;
 import flash.events.IEventDispatcher;
 import flash.utils.ByteArray;
 namespace replay_internal;
-final class PluginData
+final class ReplayPluginData
 {
   public var manager:BaseReplayManager;
 
   public var plugin:IReplayPlugin;
 
-  public function PluginData(manager:BaseReplayManager, plugin:IReplayPlugin)
+  public function ReplayPluginData(manager:BaseReplayManager, plugin:IReplayPlugin)
   {
     this.manager = manager;
     this.plugin = plugin;
