@@ -157,8 +157,7 @@ package com.netease.recording
       }
       if (replay_internal::locked)
       {
-        // 由代码触发的事件，应该无视
-        return;
+        // 由代码触发的事件，应该无�?        return;
       }
       lock();
       //try
@@ -284,10 +283,6 @@ package com.netease.recording
       {
         displayObject = DisplayObjectContainer(displayObject).
                         getChildAt(childAt.@index);
-        if (displayObject.name != childAt.@name)
-        {
-          throw new IllegalOperationError();
-        }
       }
       return displayObject;
     }

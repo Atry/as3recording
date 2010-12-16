@@ -15,7 +15,7 @@ package com.netease.recording
       this.recordingManager = recordingManager;
     }
     
-    public override function get contentLoaderInfo():LoaderInfo
+    override public function get contentLoaderInfo():LoaderInfo
     {
       throw new IllegalOperationError();
     }

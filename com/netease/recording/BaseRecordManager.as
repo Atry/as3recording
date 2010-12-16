@@ -142,7 +142,7 @@ package com.netease.recording
       }
       if (record_internal::locked)
       {
-        // 由代码触发的事件，应该无视
+        // This event is triggered by user code, so we ignore it.
         return;
       }
       record_internal::lock();
@@ -361,7 +361,7 @@ package com.netease.recording
       const a:Vector.<XML> = new Vector.<XML>();
       while (displayObject != _stage)
       {
-        a.push(<childAt name={displayObject.name}
+        a.push(<childAt
             index={displayObject.parent.getChildIndex(displayObject)}/>);
         displayObject = displayObject.parent;
       }

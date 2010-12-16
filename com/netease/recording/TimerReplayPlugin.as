@@ -7,6 +7,7 @@
 
 package com.netease.recording
 {
+  import flash.errors.IllegalOperationError;
   import flash.events.Event;
   import flash.events.IEventDispatcher;
   import flash.events.TimerEvent;
@@ -37,6 +38,22 @@ package com.netease.recording
                                             target:IEventDispatcher,
                                             event:Event):void
     {
+      switch(event.type)
+      {
+        case TimerEvent.TIMER_COMPLETE:
+        {
+          ReplayTimer(target).timer_internal::running = false;
+          break;
+        }
+        case TimerEvent.TIMER:
+        {
+          if (ReplayTimer(target).currentCount + 1 != xml.currentCount)
+          {
+            throw new IllegalOperationError();
+          }
+          break;
+        }
+      }
       ReplayTimer(target).timer_internal::currentCount = xml.currentCount;
     } 
     
@@ -51,16 +68,17 @@ package com.netease.recording
     
   }
 }
-import flash.utils.Timer;
 import com.netease.recording.ITimer;
+
 import flash.events.EventDispatcher;
 import flash.events.TimerEvent;
+import flash.utils.Timer;
 
 namespace timer_internal;
   
 final class ReplayTimer extends EventDispatcher implements ITimer
 {
-  private var _currentCount:int;
+  private var _currentCount:int = 0;
   
   public function get currentCount():int
   {
@@ -107,6 +125,11 @@ final class ReplayTimer extends EventDispatcher implements ITimer
   public function get running():Boolean
   {
     return _running;
+  }
+  
+  timer_internal function set running(value:Boolean):void
+  {
+    _running = value;
   }
 
   public function reset():void
