@@ -157,7 +157,8 @@ package com.netease.recording
       }
       if (replay_internal::locked)
       {
-        // 由代码触发的事件，应该无�?        return;
+        // 由代码触发的事件，应该无视
+        return;
       }
       lock();
       //try
