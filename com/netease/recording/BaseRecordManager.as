@@ -9,6 +9,7 @@ package com.netease.recording
 {
   
   import flash.display.DisplayObject;
+  import flash.display.DisplayObjectContainer;
   import flash.display.Stage;
   import flash.errors.IllegalOperationError;
   import flash.events.*;
@@ -22,7 +23,8 @@ package com.netease.recording
   [Event(type="flash.events.SecurityErrorEvent", name="securityError")]
   [Event(type="flash.events.IOErrorEvent", name="ioError")]
   [Event(type="flash.events.Event", name="close")]
-  public class BaseRecordManager extends EventDispatcher implements IRecordingManager
+  public class BaseRecordManager extends EventDispatcher
+    implements IRecordingManager
   {
     private var seed:uint = 0;
 
@@ -361,9 +363,11 @@ package com.netease.recording
       const a:Vector.<XML> = new Vector.<XML>();
       while (displayObject != _stage)
       {
+        const parent:DisplayObjectContainer = ContainerUtils.getParent(
+          displayObject);
         a.push(<childAt
-            index={displayObject.parent.getChildIndex(displayObject)}/>);
-        displayObject = displayObject.parent;
+            index={ContainerUtils.getChildIndex(parent, displayObject)}/>);
+        displayObject = parent;
       }
       const childList:XMLList = new XMLList();
       var i:uint = a.length;

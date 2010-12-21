@@ -282,8 +282,8 @@ package com.netease.recording
       var displayObject:DisplayObject = stage;
       for each (var childAt:XML in xml)
       {
-        displayObject = DisplayObjectContainer(displayObject).
-                        getChildAt(childAt.@index);
+        displayObject = ContainerUtils.getChildAt(
+          DisplayObjectContainer(displayObject), childAt.@index);
       }
       return displayObject;
     }
