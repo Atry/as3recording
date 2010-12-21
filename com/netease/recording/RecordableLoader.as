@@ -17,7 +17,8 @@ package com.netease.recording
     
     override public function get contentLoaderInfo():LoaderInfo
     {
-      throw new IllegalOperationError();
+      throw new IllegalOperationError("You must use contentILoaderInfo " +
+        "which return recordable ILoaderInfo instead of LoaderInfo");
     }
     
     private var recordableLoaderInfo:RecordableLoaderInfo;

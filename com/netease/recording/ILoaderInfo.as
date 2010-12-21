@@ -22,42 +22,134 @@ package com.netease.recording
   [Event(type="flash.events.ProgressEvent", name="progress")]
   [Event(type="flash.events.HTTPStatusEvent", name="httpStatus")]
   [Event(type="flash.events.IOErrorEvent", name="ioError")]
+  /**
+   * @copy flash.display.LoaderInfo
+   */
   public interface ILoaderInfo extends IEventDispatcher
   {
+    [Bindable(event="init")]
+    [Bindable(event="unload")]
+    /**
+     * @copy flash.display.LoaderInfo#actionScriptVersion
+     */
     function get actionScriptVersion():uint;
     
+    [Bindable(event="init")]
+    [Bindable(event="unload")]
+    /**
+     * @copy flash.display.LoaderInfo#applicationDomain
+     */
     function get applicationDomain():ApplicationDomain;
     
+    [Bindable(event="init")]
+    [Bindable(event="unload")]
+    [Bindable(event="progress")]
+    /**
+     * @copy flash.display.LoaderInfo#bytesLoaded
+     */
     function get bytesLoaded():uint;
     
+    [Bindable(event="init")]
+    [Bindable(event="unload")]
+    /**
+     * @copy flash.display.LoaderInfo#bytesTotal
+     */
     function get bytesTotal():uint;
     
+    [Bindable(event="init")]
+    [Bindable(event="unload")]
+    /**
+     * @copy flash.display.LoaderInfo#childAllowsParent
+     */
     function get childAllowsParent():Boolean;
     
+    [Bindable(event="init")]
+    [Bindable(event="unload")]
+    /**
+     * @copy flash.display.LoaderInfo#content
+     */
     function get content():DisplayObject;
     
+    [Bindable(event="init")]
+    [Bindable(event="unload")]
+    /**
+     * @copy flash.display.LoaderInfo#contentType
+     */
     function get contentType():String;
     
+    [Bindable(event="init")]
+    [Bindable(event="unload")]
+    /**
+     * @copy flash.display.LoaderInfo#frameRate
+     */
     function get frameRate():Number;
     
+    [Bindable(event="init")]
+    [Bindable(event="unload")]
+    /**
+     * @copy flash.display.LoaderInfo#height
+     */
     function get height():int;
     
+    /**
+     * @copy flash.display.LoaderInfo#loader
+     */
     function get loader():ILoader;
     
+    [Bindable(event="init")]
+    [Bindable(event="unload")]
+    /**
+     * @copy flash.display.LoaderInfo#loaderURL
+     */
     function get loaderURL():String;
     
+    [Bindable(event="init")]
+    [Bindable(event="unload")]
+    /**
+     * @copy flash.display.LoaderInfo#parameters
+     */
     function get parameters():Object;
     
+    [Bindable(event="init")]
+    [Bindable(event="unload")]
+    /**
+     * @copy flash.display.LoaderInfo#parentAllowsChild
+     */
     function get parentAllowsChild():Boolean;
     
+    [Bindable(event="init")]
+    [Bindable(event="unload")]
+    /**
+     * @copy flash.display.LoaderInfo#sameDomain
+     */
     function get sameDomain():Boolean;
     
+    [Bindable(event="init")]
+    [Bindable(event="unload")]
+    /**
+     * @copy flash.display.LoaderInfo#sharedEvents
+     */
     function get sharedEvents():EventDispatcher;
     
+    [Bindable(event="init")]
+    [Bindable(event="unload")]
+    /**
+     * @copy flash.display.LoaderInfo#swfVersion
+     */
     function get swfVersion():uint;
     
+    [Bindable(event="init")]
+    [Bindable(event="unload")]
+    /**
+     * @copy flash.display.LoaderInfo#url
+     */
     function get url():String;
     
+    [Bindable(event="init")]
+    [Bindable(event="unload")]
+    /**
+     * @copy flash.display.LoaderInfo#width
+     */
     function get width():int;
 
   }
