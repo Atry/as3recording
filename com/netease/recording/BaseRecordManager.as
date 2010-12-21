@@ -256,8 +256,8 @@ package com.netease.recording
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?><as3replay>\n\n");
     private function socket_closeHandler(event:Event):void
     {
-      dispatchEvent(event);
       stop();
+      dispatchEvent(event);
     }
     
     private function socket_connectHandler(event:Event):void
