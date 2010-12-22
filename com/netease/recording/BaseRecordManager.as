@@ -269,7 +269,7 @@ package com.netease.recording
       const userid:String = captures[2];
       const password:String = captures[4];
       const host:String = captures[5];
-      const port:uint = captures[7];
+      const port:uint = captures[7] || 80;
       const path:String = captures[8];
       socket.writeUTFBytes(
           urlRequest.method + " " + path + " HTTP/1.1\r\n" +
@@ -280,7 +280,7 @@ package com.netease.recording
           "Transfer-Encoding:chunked\r\n");
       if (userid)
       {
-        throw new ArgumentError();
+        throw new ArgumentError("HTTP authentication unimplemented.");
       }
       if (urlRequest.requestHeaders)
       {
