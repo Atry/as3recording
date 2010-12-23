@@ -25,7 +25,9 @@ package com.netease.recording
 
       case Event.ACTIVATE:
       case Event.DEACTIVATE:
-
+        
+      case Event.RESIZE:
+        
       case Event.RENDER:
       case Event.ENTER_FRAME:
       case Event.EXIT_FRAME:

@@ -40,7 +40,15 @@ package com.netease.recording
         }
         else
         {
-          return InteractiveObject(_manager.locateDisplayObject(xml.childAt));
+          try
+          {
+            return InteractiveObject(_manager.locateDisplayObject(xml.childAt));
+          }
+          catch(e:RangeError)
+          {
+            trace("Warning: Object not found.", xml);
+          }
+          return null;
         }
       }
     }

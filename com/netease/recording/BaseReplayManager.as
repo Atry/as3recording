@@ -262,8 +262,20 @@ package com.netease.recording
       }
       else
       {
-        target = locateDisplayObject(eventElement.target.childAt);
-        addObject(target);
+        try
+        {
+          target = locateDisplayObject(eventElement.target.childAt);
+        }
+        catch(e:RangeError)
+        {
+          trace("Warning: Target not found and event was ignored.",
+            eventElement.toXMLString());
+          return;
+        }
+        finally
+        {
+          addObject(target);
+        }
       }
       const bubbles:Boolean = toBoolean(eventElement.bubbles);
       const cancelable:Boolean = toBoolean(eventElement.cancelable);
@@ -412,17 +424,17 @@ package com.netease.recording
     
     private function urlLoader_completeHandler(event:Event):void
     {
-      const data:String = urlLoader.data;
-      if (data.search(/<\/as3replay>\s*$/) == -1)
+      if (urlLoader == event.currentTarget)
       {
-        replayLoaded(XML(data + "</as3replay>").children());
-      }
-      else
-      {
-        replayLoaded(XML(data).children());
-      }
-      if (urlLoader)
-      {
+        const data:String = urlLoader.data;
+        if (data.search(/<\/as3replay>\s*$/) == -1)
+        {
+          replayLoaded(XML(data + "</as3replay>").children());
+        }
+        else
+        {
+          replayLoaded(XML(data).children());
+        }
         urlLoader.close();
         urlLoader = null;
       }
