@@ -44,9 +44,9 @@ package com.netease.recording
           }
           catch(e:ArgumentError)
           {
-            trace("Unrecordable object：", value);
-            return <!-- ignore unrecordable object -->;
           }
+          trace("Unrecordable object：", value);
+          return <!-- ignore unrecordable object -->;
         }
       }
     }
