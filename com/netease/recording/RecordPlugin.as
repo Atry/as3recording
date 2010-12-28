@@ -19,7 +19,7 @@ package com.netease.recording
     
     public function RecordPlugin(manager:BaseRecordManager)
     {
-      _manager = manager
+      _manager = manager;
     }
 
     protected final function displayObjectToXML(name:String,
@@ -38,7 +38,15 @@ package com.netease.recording
         }
         else
         {
-          return <{name} id={_manager.getRegisterObjectID(value)}/>;
+          try
+          {
+            return <{name} id={_manager.getRegisterObjectID(value)}/>;
+          }
+          catch(e:ArgumentError)
+          {
+            trace("Unrecordable object："value);
+            return <!-- ignore unrecordable object -->;
+          }
         }
       }
     }
