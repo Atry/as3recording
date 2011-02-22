@@ -15,8 +15,10 @@ package com.netease.recording
   import flash.events.*;
   import flash.net.Socket;
   import flash.net.URLRequestHeader;
+  import flash.system.Capabilities;
   import flash.utils.ByteArray;
   import flash.utils.Dictionary;
+  import flash.utils.Endian;
   import flash.utils.IDataOutput;
   import flash.utils.getQualifiedClassName;
   
@@ -170,6 +172,38 @@ package com.netease.recording
         record_internal::unlock();
       }
     }
+    
+    /** The fast CRC table. Computed once when the CRC32 class is loaded. */
+    private static var CRC_TABLE:Array = makeCrcTable();
+    
+    public static function crc32Checksum(data:ByteArray, start:uint = 0, len:uint = 0):uint {
+      if (start >= data.length) { start = data.length; }
+      if (len == 0) { len = data.length - start; }
+      if (len + start > data.length) { len = data.length - start; }
+      var i:uint;
+      var c:uint = 0xffffffff;
+      for (i = start; i < len; i++) {
+        c = uint(CRC_TABLE[(c ^ data[i]) & 0xff]) ^ (c >>> 8);
+      }
+      return (c ^ 0xffffffff);
+    }
+    
+    /**
+     * 生成CRC表
+     * @return CRC表
+     */
+    private static function makeCrcTable():Array {
+      var crcTable:Array = [];
+      for (var n:int = 0; n < 256; n++) {
+        var c:uint = n;
+        for (var k:int = 8; --k >= 0; ) {
+          if((c & 1) != 0) c = 0xedb88320 ^ (c >>> 1);
+          else c = c >>> 1;
+        }
+        crcTable[n] = c;
+      }
+      return crcTable;
+    }
 
     private static const FOOTER:ByteArray = new ByteArray();
     FOOTER.writeUTFBytes("</as3replay>\n");
@@ -178,10 +212,43 @@ package com.netease.recording
     {
       if (bytes.length > 0)
       {
-        output.writeUTFBytes(bytes.length.toString(16));
-        output.writeUTFBytes("\r\n");
-        output.writeBytes(bytes);
-        output.writeUTFBytes("\r\n");
+        if (gzipEnabled)
+        {
+          const crc32:uint = crc32Checksum(bytes);
+          const isize:uint = bytes.length % Math.pow(2, 32);
+          bytes.deflate();
+          output.writeUTFBytes((18 + bytes.length).toString(16));
+          output.writeUTFBytes("\r\n");
+          output.endian = Endian.LITTLE_ENDIAN;
+          const id1:uint = 31;
+          output.writeByte(id1);
+          const id2:uint = 139;
+          output.writeByte(id2);
+          const cm:uint = 8;
+          output.writeByte(cm);
+          const flags:int = 0;
+          output.writeByte(flags);
+          const mtime:uint = new Date().time / 1000;
+          output.writeUnsignedInt(mtime);
+          const xfl:uint = 4;
+          output.writeByte(xfl);
+          const os:uint =
+            Capabilities.os.indexOf("Windows") != -1 ? 11 :// NTFS
+            Capabilities.os.indexOf("Mac OS") != -1 ? 7 :// Macintosh
+            3;//Unix
+          output.writeByte(os);
+          output.writeBytes(bytes);
+          output.writeUnsignedInt(crc32);
+          output.writeUnsignedInt(isize);
+          output.writeUTFBytes("\r\n");
+        }
+        else
+        {
+          output.writeUTFBytes((bytes.length).toString(16));
+          output.writeUTFBytes("\r\n");
+          output.writeBytes(bytes);
+          output.writeUTFBytes("\r\n");
+        }
       }
     }
     
@@ -239,9 +306,13 @@ package com.netease.recording
     
     private var urlRequest:RecordURLRequest;
     
-    public function BaseRecordManager(urlRequest:RecordURLRequest)
+    private var gzipEnabled:Boolean;
+    
+    public function BaseRecordManager(urlRequest:RecordURLRequest,
+                                      gzipEnabled:Boolean = false)
     {
       this.urlRequest = urlRequest;
+      this.gzipEnabled = gzipEnabled;
     }
     
     public final function get running():Boolean
@@ -278,6 +349,10 @@ package com.netease.recording
           "Connection:close\r\n" +
           "Content-Type:text/xml\r\n" +
           "Transfer-Encoding:chunked\r\n");
+      if (gzipEnabled)
+      {
+        socket.writeUTFBytes("Content-Encoding:gzip\r\n");
+      }
       if (userid)
       {
         throw new ArgumentError("HTTP authentication unimplemented.");
@@ -419,10 +494,6 @@ package com.netease.recording
           <frame n={frameCount} phase={framePhase || Event.EXIT_FRAME}/>.
           toXMLString());
         chunkBuffer.writeUTFBytes("\n");
-      }
-      if (plugin.targetType == null)
-      {
-        idsOfObject[event.target] = seed++;
       }
       const eventXML:XML =
       <{event.type}>

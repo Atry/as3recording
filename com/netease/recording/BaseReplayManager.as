@@ -272,10 +272,6 @@ package com.netease.recording
             eventElement.toXMLString());
           return;
         }
-        finally
-        {
-          addObject(target);
-        }
       }
       const bubbles:Boolean = toBoolean(eventElement.bubbles);
       const cancelable:Boolean = toBoolean(eventElement.cancelable);
