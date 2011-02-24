@@ -41,7 +41,8 @@ package com.netease.recording
       const focusEvent:FocusEvent = FocusEvent(event)
       return (
           displayObjectToXML("focus", manager.stage.focus) +
-          displayObjectToXML("relatedObject", focusEvent.relatedObject) +
+          // 无法记录 relatedObject
+          //displayObjectToXML("relatedObject", focusEvent.relatedObject) +
           toXML("shiftKey", focusEvent.shiftKey) +
           toXML("keyCode", focusEvent.keyCode) +
           (Capabilities.playerType == "Desktop" ?

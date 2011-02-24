@@ -40,7 +40,8 @@ package com.netease.recording
       const mouseEvent:MouseEvent = MouseEvent(event);
       return toXML("stageX", mouseEvent.stageX) +
              toXML("stageY", mouseEvent.stageY) +
-             displayObjectToXML("relatedObject", mouseEvent.relatedObject) +
+             // 无法记录 relatedObject
+             //displayObjectToXML("relatedObject", mouseEvent.relatedObject) +
              toXML("ctrlKey", mouseEvent.ctrlKey) +
              toXML("altKey", mouseEvent.altKey) +
              toXML("shiftKey", mouseEvent.shiftKey) +

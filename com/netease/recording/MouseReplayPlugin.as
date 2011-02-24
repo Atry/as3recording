@@ -48,38 +48,36 @@ package com.netease.recording
       const stageY:Number = xml.stageY;
       const localPoint:Point = DisplayObject(target).
           globalToLocal(new Point(stageX, stageY));
-      if (Capabilities.playerType == "Desktop")
-      {
-        const eventClass:Class = MouseEvent;
-        return new eventClass(type,
-                              bubbles,
-                              cancelable,
-                              localPoint.x,
-                              localPoint.y,
-                              toInteractiveObject(xml.relatedObject),
-                              toBoolean(xml.ctrlKey),
-                              toBoolean(xml.altKey),
-                              toBoolean(xml.shiftKey),
-                              toBoolean(xml.buttonDown),
-                              xml.delta,
-                              toBoolean(xml.commandKey),
-                              toBoolean(xml.controlKey),
-                              xml.clickCount);
-      }
-      else
-      {
-        return new MouseEvent(type,
-                              bubbles,
-                              cancelable,
-                              localPoint.x,
-                              localPoint.y,
-                              toInteractiveObject(xml.relatedObject),
-                              toBoolean(xml.ctrlKey),
-                              toBoolean(xml.altKey),
-                              toBoolean(xml.shiftKey),
-                              toBoolean(xml.buttonDown),
-                              xml.delta);
-      }
+      const result:MouseEvent = Capabilities.playerType == "Desktop" ?
+        new (MouseEvent)(// 避免类型检查
+          type,
+          bubbles,
+          cancelable,
+          localPoint.x,
+          localPoint.y,
+          null, // 无法记录 relatedObject
+          toBoolean(xml.ctrlKey),
+          toBoolean(xml.altKey),
+          toBoolean(xml.shiftKey),
+          toBoolean(xml.buttonDown),
+          xml.delta,
+          toBoolean(xml.commandKey),
+          toBoolean(xml.controlKey),
+          xml.clickCount) :
+        new MouseEvent(
+          type,
+          bubbles,
+          cancelable,
+          localPoint.x,
+          localPoint.y,
+          null, // 无法记录 relatedObject
+          toBoolean(xml.ctrlKey),
+          toBoolean(xml.altKey),
+          toBoolean(xml.shiftKey),
+          toBoolean(xml.buttonDown),
+          xml.delta);
+      result.isRelatedObjectInaccessible = true;
+      return result;
     }
     
   }

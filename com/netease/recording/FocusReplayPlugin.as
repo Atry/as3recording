@@ -49,26 +49,24 @@ package com.netease.recording
                             cancelable:Boolean,
                             xml:XML):Event
     {
-      if (Capabilities.playerType == "Desktop")
-      {
-        const eventClass:Class = FocusEvent;
-        return new eventClass(type,
-                              bubbles,
-                              cancelable,
-                              toInteractiveObject(xml.relatedObject),
-                              toBoolean(xml.shiftKey),
-                              xml.keyCode,
-                              xml.direction);
-      }
-      else
-      {
-        return new FocusEvent(type,
-                              bubbles,
-                              cancelable,
-                              toInteractiveObject(xml.relatedObject),
-                              toBoolean(xml.shiftKey),
-                              xml.keyCode);
-      }
+      const result:FocusEvent = Capabilities.playerType == "Desktop" ?
+        new (FocusEvent)(// 避免类型检查
+          type,
+          bubbles,
+          cancelable,
+          null, // 无法记录 relatedObject
+          toBoolean(xml.shiftKey),
+          xml.keyCode,
+          xml.direction) :
+        new FocusEvent(
+          type,
+          bubbles,
+          cancelable,
+          null, // 无法记录 relatedObject
+          toBoolean(xml.shiftKey),
+          xml.keyCode);
+      result.isRelatedObjectInaccessible = true;
+      return result;
     }
     
   }

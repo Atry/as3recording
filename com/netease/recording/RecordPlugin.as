@@ -38,15 +38,7 @@ package com.netease.recording
         }
         else
         {
-          try
-          {
-            return <{name} id={_manager.getRegisterObjectID(value)}/>;
-          }
-          catch(e:ArgumentError)
-          {
-          }
-          trace("Unrecordable object：", value);
-          return <!-- ignore unrecordable object -->;
+          throw new ArgumentError("Unrecordable object：", value);
         }
       }
     }
