@@ -55,7 +55,7 @@ package com.netease.recording
         }
       }
       ReplayTimer(target).timer_internal::currentCount = xml.currentCount;
-    } 
+    }
     
     public function toEvent(target:IEventDispatcher,
                             type:String,

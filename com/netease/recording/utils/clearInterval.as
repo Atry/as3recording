@@ -17,6 +17,6 @@ package com.netease.recording.utils
     {
       delete intervalTimers[id];
     }
-    while (id in intervalTimers); 
+    while (id in intervalTimers);
   }
 }

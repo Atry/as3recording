@@ -54,7 +54,7 @@ package com.netease.recording
         }
       }
       else
-      { 
+      {
         if (plugin.targetType in instanceHandlers)
         {
           throw new ArgumentError();
@@ -480,7 +480,8 @@ package com.netease.recording
     
     private function lock():void
     {
-      if (_locked) {
+      if (_locked)
+      {
         throw new IllegalOperationError();
       }
       _locked = true;
@@ -488,7 +489,8 @@ package com.netease.recording
     
     private function unlock():void
     {
-      if (!_locked) {
+      if (!_locked)
+      {
         throw new IllegalOperationError();
       }
       _locked = false;
