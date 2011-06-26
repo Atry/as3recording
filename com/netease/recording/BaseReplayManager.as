@@ -73,7 +73,7 @@ package com.netease.recording
       return id;
     }
      
-    replay_internal final function registerObject(pluginData:ReplayPluginData,
+    replay_internal final function internalRegisterObject(pluginData:ReplayPluginData,
                                                   object:*):void
     {
       const eventDispatcher:IEventDispatcher = object as IEventDispatcher;
@@ -99,7 +99,7 @@ package com.netease.recording
       const pluginData:ReplayPluginData = instanceHandlers[type];
       if (running)
       {
-        replay_internal::registerObject(pluginData, object);
+        replay_internal::internalRegisterObject(pluginData, object);
       }
     }
     
@@ -109,7 +109,7 @@ package com.netease.recording
       const product:* = pluginData.plugin.newInstance.apply(null, args);
       if (running)
       {
-        replay_internal::registerObject(pluginData, product);
+        replay_internal::internalRegisterObject(pluginData, product);
       }
       return product;
     }
