@@ -22,12 +22,10 @@ package com.netease.recording
   import flash.utils.IDataOutput;
   import flash.utils.getQualifiedClassName;
   
-  [Event(type="flash.events.SecurityErrorEvent", name="securityError")]
-  [Event(type="flash.events.IOErrorEvent", name="ioError")]
-  [Event(type="flash.events.Event", name="close")]
-  public class BaseRecordManager extends EventDispatcher
-    implements IRecordingManager
+  public class BaseRecordManager implements IRecordingManager
   {
+    public var writeFunction:Function;
+    
     private var seed:uint = 0;
 
     private const idsOfObject:Dictionary = new Dictionary(true);
@@ -61,7 +59,7 @@ package com.netease.recording
       }
     }
     
-    record_internal final function internalRegisterObject(pluginData:RecordPluginData,
+    record_internal final function registerObject(pluginData:RecordPluginData,
                                                   object:*):void
     {
       const eventDispatcher:IEventDispatcher = object as IEventDispatcher;
@@ -87,7 +85,7 @@ package com.netease.recording
       const pluginData:RecordPluginData = instanceHandlers[type];
       if (running)
       {
-        record_internal::internalRegisterObject(pluginData, object);
+        record_internal::registerObject(pluginData, object);
       }
     }
     
@@ -97,7 +95,7 @@ package com.netease.recording
       const product:* = pluginData.plugin.newInstance.apply(null, args);
       if (running)
       {
-        record_internal::internalRegisterObject(pluginData, product);
+        record_internal::registerObject(pluginData, product);
       }
       return product;
     }
@@ -174,97 +172,10 @@ package com.netease.recording
         record_internal::unlock();
       }
     }
-    
-    /** The fast CRC table. Computed once when the CRC32 class is loaded. */
-    private static var CRC_TABLE:Array = makeCrcTable();
-    
-    public static function crc32Checksum(data:ByteArray, start:uint = 0, len:uint = 0):uint {
-      if (start >= data.length)
-      {
-        start = data.length;
-      }
-      if (len == 0)
-      {
-        len = data.length - start;
-      }
-      if (len + start > data.length)
-      {
-        len = data.length - start;
-      }
-      var i:uint;
-      var c:uint = 0xffffffff;
-      for (i = start; i < len; i++)
-      {
-        c = uint(CRC_TABLE[(c ^ data[i]) & 0xff]) ^ (c >>> 8);
-      }
-      return (c ^ 0xffffffff);
-    }
-    
-    /**
-     * 生成CRC表
-     * @return CRC表
-     */
-    private static function makeCrcTable():Array {
-      var crcTable:Array = [];
-      for (var n:int = 0; n < 256; n++)
-      {
-        var c:uint = n;
-        for (var k:int = 8; --k >= 0; )
-        {
-          if ((c & 1) != 0) c = 0xedb88320 ^ (c >>> 1);
-          else c = c >>> 1;
-        }
-        crcTable[n] = c;
-      }
-      return crcTable;
-    }
 
     private static const FOOTER:ByteArray = new ByteArray();
     FOOTER.writeUTFBytes("</as3replay>\n");
     
-    private function writeChunk(output:IDataOutput, bytes:ByteArray):void
-    {
-      if (bytes.length > 0)
-      {
-        if (gzipEnabled)
-        {
-          const crc32:uint = crc32Checksum(bytes);
-          const isize:uint = bytes.length % Math.pow(2, 32);
-          bytes.deflate();
-          output.writeUTFBytes((18 + bytes.length).toString(16));
-          output.writeUTFBytes("\r\n");
-          output.endian = Endian.LITTLE_ENDIAN;
-          const id1:uint = 31;
-          output.writeByte(id1);
-          const id2:uint = 139;
-          output.writeByte(id2);
-          const cm:uint = 8;
-          output.writeByte(cm);
-          const flags:int = 0;
-          output.writeByte(flags);
-          const mtime:uint = new Date().time / 1000;
-          output.writeUnsignedInt(mtime);
-          const xfl:uint = 4;
-          output.writeByte(xfl);
-          const os:uint =
-            Capabilities.os.indexOf("Windows") != -1 ? 11 :// NTFS
-            Capabilities.os.indexOf("Mac OS") != -1 ? 7 :// Macintosh
-            3;//Unix
-          output.writeByte(os);
-          output.writeBytes(bytes);
-          output.writeUnsignedInt(crc32);
-          output.writeUnsignedInt(isize);
-          output.writeUTFBytes("\r\n");
-        }
-        else
-        {
-          output.writeUTFBytes((bytes.length).toString(16));
-          output.writeUTFBytes("\r\n");
-          output.writeBytes(bytes);
-          output.writeUTFBytes("\r\n");
-        }
-      }
-    }
     
     public final function stop():void
     {
@@ -274,16 +185,7 @@ package com.netease.recording
       }
       const stage:Stage = _stage;
       _stage = null;
-      writeChunk(socket, FOOTER);
-      socket.writeUTFBytes("0\r\n\r\n");
-      socket.flush();
-      socket.removeEventListener(Event.CLOSE, socket_closeHandler);
-      socket.removeEventListener(IOErrorEvent.IO_ERROR, socket_closeHandler);
-      socket.removeEventListener(SecurityErrorEvent.SECURITY_ERROR,
-                                 socket_closeHandler);
-      socket.removeEventListener(Event.CLOSE, socket_closeHandler);
-      socket.removeEventListener(Event.CONNECT, socket_connectHandler);
-      socket = null;
+      writeFunction(FOOTER);
       stage.removeEventListener(Event.ENTER_FRAME,
                                 enterFrameHandler);
       stage.removeEventListener(Event.EXIT_FRAME,
@@ -318,73 +220,15 @@ package com.netease.recording
       }
     }
     
-    private var urlRequest:RecordURLRequest;
-    
-    private var gzipEnabled:Boolean;
-    
-    public function BaseRecordManager(urlRequest:RecordURLRequest,
-                                      gzipEnabled:Boolean = false)
-    {
-      this.urlRequest = urlRequest;
-      this.gzipEnabled = gzipEnabled;
-    }
-    
     public final function get running():Boolean
     {
       return _stage != null;
     }
 
-    private var socket:Socket;
-    
-    private var buffer:ByteArray;
-    
     private static const HEADER:ByteArray = new ByteArray();
     HEADER.writeUTFBytes(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?><as3replay>\n\n");
-    private function socket_closeHandler(event:Event):void
-    {
-      stop();
-      dispatchEvent(event);
-    }
-    
-    private function socket_connectHandler(event:Event):void
-    {
-      const captures:Array = urlRequest.url.match(
-          /http:\/\/(([^\/:@]+)(:(.+))?@)?([^\/:]+)(:([^\/]+))?(\/?.*)/);
-      const userid:String = captures[2];
-      const password:String = captures[4];
-      const host:String = captures[5];
-      const port:uint = captures[7] || 80;
-      const path:String = captures[8];
-      socket.writeUTFBytes(
-          urlRequest.method + " " + path + " HTTP/1.1\r\n" +
-          "Host: " + host + "\r\n" +
-          "User-Agent:As3Recording\r\n" +
-          "Connection:close\r\n" +
-          "Content-Type:text/xml\r\n" +
-          "Transfer-Encoding:chunked\r\n");
-      if (gzipEnabled)
-      {
-        socket.writeUTFBytes("Content-Encoding:gzip\r\n");
-      }
-      if (userid)
-      {
-        throw new ArgumentError("HTTP authentication unimplemented.");
-      }
-      if (urlRequest.requestHeaders)
-      {
-        for each(var header:URLRequestHeader in urlRequest.requestHeaders)
-        {
-          socket.writeUTFBytes(header.name + ":" + header.value);
-        }
-      }
-      socket.writeUTFBytes("\r\n");
-      writeChunk(socket, HEADER);
-      writeChunk(socket, buffer);
-      socket.flush();
-      buffer = null;
-    }
-    
+
     private var _eventPriority:int;
     
     public final function get eventPriority():int
@@ -394,6 +238,7 @@ package com.netease.recording
     
     public final function start(stage:Stage, eventPriority:int=10000):void
     {
+      writeFunction(HEADER);
       if (!stage)
       {
         throw new ArgumentError();
@@ -404,28 +249,14 @@ package com.netease.recording
       }
       _stage = stage;
       _eventPriority = eventPriority;
-      const captures:Array = urlRequest.url.match(
-          /http:\/\/(([^\/:@]+)(:(.+))?@)?([^\/:]+)(:([^\/]+))?(\/?.*)/);
-      const host:String = captures[5];
-      const port:uint = captures[7];
-      
-      buffer = new ByteArray();
-      socket = new Socket();
-      socket.addEventListener(Event.CLOSE, socket_closeHandler);
-      socket.addEventListener(IOErrorEvent.IO_ERROR, socket_closeHandler);
-      socket.addEventListener(SecurityErrorEvent.SECURITY_ERROR,
-                              socket_closeHandler);
-      socket.addEventListener(Event.CLOSE, socket_closeHandler);
-      socket.addEventListener(Event.CONNECT, socket_connectHandler);
-      socket.connect(host, port);
       stage.addEventListener(Event.ENTER_FRAME,
-                             enterFrameHandler,
-                             false,
-                             eventPriority);
+        enterFrameHandler,
+        false,
+        eventPriority);
       stage.addEventListener(Event.EXIT_FRAME,
-                             enterFrameHandler,
-                             false,
-                             eventPriority);
+        enterFrameHandler,
+        false,
+        eventPriority);
       for each (var globalPlugin:RecordPluginData in globalHandlers)
       {
         for each (var eventName:String in globalPlugin.plugin.eventNames)
@@ -475,7 +306,7 @@ package com.netease.recording
       {
         return result;
       }
-      const chunkBuffer:ByteArray = socket.connected ? new ByteArray() : buffer;
+      const chunkBuffer:ByteArray = new ByteArray();
       if (frameChanged)
       {
         frameChanged = false;
@@ -487,11 +318,7 @@ package com.netease.recording
       chunkBuffer.writeUTFBytes(
         <random>{(result * 0x10000000000000000).toString()}</random>.toXMLString());
       chunkBuffer.writeUTFBytes("\n\n");
-      if (socket.connected)
-      {
-        writeChunk(socket, chunkBuffer);
-        socket.flush();
-      }
+      writeFunction(chunkBuffer);
       return result;
     }
     
@@ -500,7 +327,7 @@ package com.netease.recording
     record_internal final function record(plugin:IRecordPlugin,
                                           event:Event):void
     {
-      const chunkBuffer:ByteArray = socket.connected ? new ByteArray() : buffer;
+      const chunkBuffer:ByteArray = new ByteArray();
       if (frameChanged)
       {
         frameChanged = false;
@@ -530,11 +357,7 @@ package com.netease.recording
       }
       chunkBuffer.writeUTFBytes(eventXML.toXMLString());
       chunkBuffer.writeUTFBytes("\n\n");
-      if (socket.connected)
-      {
-        writeChunk(socket, chunkBuffer);
-        socket.flush();
-      }
+      writeFunction(chunkBuffer);
     }
   }
 }

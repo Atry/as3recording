@@ -18,10 +18,8 @@ package com.netease.recording
   
   public class RecordManager extends BaseRecordManager
   {
-    public function RecordManager(url:RecordURLRequest,
-                                  gzipEnabled:Boolean=false)
+    public function RecordManager()
     {
-      super(url, gzipEnabled);
       addPlugin(new EventRecordPlugin(this));
       addPlugin(new MouseRecordPlugin(this));
       addPlugin(new KeyboardRecordPlugin(this));
